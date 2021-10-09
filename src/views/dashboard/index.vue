@@ -1,11 +1,13 @@
 <template>
   <div class="dashboard-container">
     <div class="dashboard-text">name: {{ name }}</div>
+    <!-- <button @click="text">测试</button> -->
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
+import {  getUserProfile } from '@/api/user'
 
 export default {
   name: 'Dashboard',
@@ -13,6 +15,13 @@ export default {
     ...mapGetters([
       'name'
     ])
+  },
+  methods: {
+    // 测试请求头token
+    // async text() {
+    //   const res = await getUserProfile()
+    //   console.log(res)
+    // }
   }
 }
 </script>
@@ -27,4 +36,5 @@ export default {
     line-height: 46px;
   }
 }
+
 </style>

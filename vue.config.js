@@ -36,7 +36,22 @@ module.exports = {
       warnings: false,
       errors: true
     },
-    before: require('./mock/mock-server.js')
+    // before: require('./mock/mock-server.js')
+    // 跨域解决
+    proxy: {
+      // 判断是否以/api开头 如果是就发起请求
+      '/dev_api': {
+        // 目标服务器 就是指向哪一个地址发起请求
+        // 在触发之后 我们请求的地址 会拼接到target后面
+        target:'http://8.131.91.46:6868/',
+        changeOring: true,// 是否跨域 设置成true就能发起请求
+        // 路径重写
+        pathRewrite: {
+          // 重新路由  localhost:8888/api/login  => www.baidu.com/api/login
+          '^/dev_api': '/api' // 假设我们想把 localhost:8888/api/login 变成www.baidu.com/login 就需要这么做 
+        }
+      }
+    }
   },
   configureWebpack: {
     // provide the app's title in webpack's name field, so that
