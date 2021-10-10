@@ -8,7 +8,10 @@ import 'nprogress/nprogress.css' // progress bar style
 const whitelist = ['/login', '/404']
 
 // 路由前置守卫
+import getPageTitle from '@/utils/get-page-title'
 router.beforeEach(async (to, from, next) => {
+   // 对当前页面的标题进行设计
+   document.title = getPageTitle(to.meta.title)
    const token = store.state.user.token
    NProgress.start()
    if (token) {

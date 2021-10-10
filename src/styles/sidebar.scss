@@ -94,6 +94,18 @@
           }
         }
       }
+
+      .is-active {
+        background-color: $menuText !important;
+          
+        span{
+          color: $menuActiveText !important;
+        }
+          
+        .svg-icon{
+          color: $menuActiveText !important;
+        }
+      }
     }
 
     // menu hover
