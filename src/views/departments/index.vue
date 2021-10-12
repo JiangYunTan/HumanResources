@@ -10,7 +10,7 @@
             <el-row type="flex" justify="space-between" align="middle" class="department-header">
               <el-col :span="20">
                 <i class="el-icon-s-home" />
-                <span class="company">江苏传智播客教育科技股份有限公司</span>
+                <span class="company">小柒AI科技研发股份有限公司</span>
               </el-col>
               <el-col :span="4">
                 <el-row type="flex" justify="end">
@@ -21,7 +21,7 @@
                         操作<i class="el-icon-arrow-down el-icon--right" />
                       </span>
                       <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item>添加子部门</el-dropdown-item>
+                        <el-dropdown-item @click.native="good()">添加子部门</el-dropdown-item>
                       </el-dropdown-menu>
                     </el-dropdown>
                   </el-col>
@@ -46,7 +46,9 @@
                           操作<i class="el-icon-arrow-down el-icon--right" />
                         </span>
                         <el-dropdown-menu slot="dropdown">
-                          <el-dropdown-item>添加子部门</el-dropdown-item>
+                          <el-dropdown-item @click.native="addDept(data.id)">添加子部门</el-dropdown-item>
+                          <el-dropdown-item @click.native="editDept(data.id)">编辑部门</el-dropdown-item>
+                          <el-dropdown-item v-if="data && !data.children" @click.native="delDept(data.id)">删除部门</el-dropdown-item>
                         </el-dropdown-menu>
                       </el-dropdown>
                     </el-col>
@@ -57,6 +59,16 @@
             </el-tree>
           </el-tab-pane>
         </el-tabs>
+        <!-- 添加或编辑弹框 -->
+        <el-dialog 
+          :visible.sync="showDialog" 
+          width="50%"
+          :close-on-click-modal="false"
+          :close-on-press-escape="false"
+          :title="isEdit ? '编辑子部门' : '添加子部门'">
+            <!-- 添加子组件弹层 -->
+            <deptDialog v-if="showDialog" :parent-id="parentId" @update-depart="updateDepart" :is-edit="isEdit"  @close="closeDialog" :origin-list="originList"/>
+        </el-dialog>
       </el-card>
       <!-- Terr树形结构 -->
       <!-- <el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick"></el-tree> -->
@@ -65,9 +77,14 @@
 </template>
 
 <script>
-import { getDepartments } from '@/api/departments'
+import { getDepartments, delDepartment } from '@/api/departments'
+// 引入子组件
+import deptDialog from './deptDialog.vue'
 export default {
   name: 'Departments',
+  components: {
+    deptDialog
+  },
   data() {
     return {
       activeName: 'first', // 被激活的 Tab 标签页
@@ -76,10 +93,28 @@ export default {
       defaultProps: {
         children: 'children',
         label: 'name'
-      }
+      },
+      showDialog: false, // 控制添加或编辑弹框展示
+      parentId:'',
+      isEdit: false, // 用来显示编辑页面的
     }
   },
   methods: {
+    good() {
+      // console.log(1);
+      this.parentId = ''
+      this.showDialog = true
+      // isEdit 为 false，说明是添加
+      this.isEdit = false
+      // this.$refs.goods.hSubmit()
+    },
+    // 隐藏弹框
+    updateDepart() {
+      // 关闭弹层
+      this.showDialog = false
+      // 重新获取数据
+      this.getDepartments()
+    },
     handleNodeClick() {
       console.log(666);
     },
@@ -99,7 +134,7 @@ export default {
     // }, 
     // 递归方式渲染成树形结构
     arrToTree(list, rootValue) {
-      const treeData = []
+      const treeData = [] 
       list.forEach(item => {
         if(item.pid === rootValue) {
           // treeData.push(item)
@@ -119,7 +154,55 @@ export default {
       const res = await getDepartments()
       // console.log(res.data.depts);
       // this.treeData = res.data.depts
+        // 格式化需要传递给子组件的数据
+      this.originList = res.data.depts.map(item => (
+        {
+          id: item.id,
+          code: item.code,
+          pid: item.pid,
+          name: item.name
+        }
+      ))
       this.treeData = this.arrToTree(res.data.depts, '')
+          // console.log(this.treeData);
+    },
+    // 添加子部门
+    addDept(id) {
+      // console.log(id)
+      this.parentId = id
+      this.showDialog = true
+      // isEdit 为 false，说明是添加
+      this.isEdit = false
+    },
+    // 编辑部门
+    editDept(id) {
+      this.parentId = id
+      this.showDialog = true
+      // isEdit 为 true，说明是编辑
+      this.isEdit = true
+    },
+    // 删除部门
+    async delDept(id) {
+       // 显示删除确认消息对话框
+      const delRes = await this.$confirm('此操作将永久删除部门, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).catch(err => err)
+
+      // 如果返回的结果是 cancel 说明用户取消了删除
+      if (delRes === 'cancel') return this.$message('您取消了删除')
+      const res = await delDepartment(id)
+      // this.$message.success(res.message)
+      if (!res.success) return this.$message.error(res.message)
+      // 删除成功需要给用户进行提示
+      this.$message.success(res.message)
+      // 删除后需要重新获取当前页面数据
+      this.getDepartments()
+    },
+     // 隐藏新增、编辑弹框
+    closeDialog() {
+      this.showDialog = false
     }
   },
   created() {

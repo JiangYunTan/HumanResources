@@ -51,6 +51,7 @@ service.interceptors.response.use(
       })
       // 抛出接口异常
       return Promise.reject(new Error(response.data.message))
+      // return
     }
   },
   error => {
