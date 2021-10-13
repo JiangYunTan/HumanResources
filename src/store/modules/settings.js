@@ -23,10 +23,14 @@ const actions = {
   }
 }
 
+// const getters = {
+//   companyId: state => state.user.userInfo.companyId // 公司 ID
+// }
 export default {
   namespaced: true,
   state,
   mutations,
-  actions
+  actions,
+  // getters
 }
 

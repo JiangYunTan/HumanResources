@@ -15,6 +15,11 @@ import router from './router'
 import '@/icons' // icon
 import '@/permission' // permission control
 
+// 导入组件
+import PageTools from '@/components/PageTools'
+// 注册组件
+Vue.component('PageTools', PageTools)
+
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api

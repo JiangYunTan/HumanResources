@@ -29,17 +29,41 @@ export default {
   name: 'DeptDialog',
   data() {
      // 校验部门编码是否重复
+       // 校验部门编码是否重复
       const validCode = (rule, value, callback) => {
-         // 将给个组织架构的编码取出，组成一个新的数组
-         const existCodeList = this.originList.map(item => item.code)
+         let existCodeList = this.originList.map(item => item.code)
 
-         if(this.isEdit) {
-            existCodeList = this.originList.filter(item => item.pid === this.parentId).map(item => item.name)
+         // 如果是编辑状态，则将需要编辑的这一项排除在外
+         if (this.isEdit) {
+            
+            // 使用 filter 方法筛选出 id 不一致的那一项，这时候只剩余 15 项
+            // 将筛选出来 15 项中的 code 取出来形成一个新的数组
+            existCodeList = this.originList.filter(item => item.id !== this.parentId).map(item => item.code)
          }
-         // 使用 includes 判断是否能否找到对应的部门，如果找到了则返回一个布尔值
-         // 如果存在该对象，则说明编码已经存在，抛出错误
-         // 如果不存在该对象，不做任何处理
+
          existCodeList.includes(value) ? callback(new Error('编码' + value + '已经存在')) : callback()
+      }
+      // 同级部门禁止出现重复部门
+      const validName = (rule, value, callback) => {
+         // 查找同级的分类
+         let existNameList = this.originList.filter(item => item.pid === this.parentId).map(item => item.name)
+         // 3. 编辑时的校验
+         if (this.isEdit) {
+            // 3.1 【先找到自身对应的对象】
+            // 找到父级的 id，因为父级的 id 和 子级的 pid 一致
+            // 所以只要使用 find 判断每一项 id 和 传入的 id 是否一致，就可以获取到当前编辑这一项的对象
+            const dept = this.originList.find(item => item.id === this.parentId)
+
+            // 3.2 【获取父级的 id】，因为父级的 id 和 子级的 pid 一致，直接 【对象.pid】 就能够获取到父级的 id
+            const pid = dept.pid
+
+            // 3.3 既然已经有了父级 id，只需获取兄弟节点：从 originList 中筛选出和 父级 id 一致的 pid
+            // 先使用 filter 筛选出兄弟节点，同时将自己排除
+            // 在使用 map 方法将兄弟节点的 name 组装成一个数组
+            existNameList = this.originList.filter(item => item.pid === pid && item.id !== this.parentId).map(item => item.name)
+         }
+         // 判断最新输入的部门名称是否存在
+         existNameList.includes(value) ? callback(new Error('名字' + value + '已经被占用了')) : callback()
       }
      return {
         deptFrom: {
@@ -52,7 +76,8 @@ export default {
         rules: {
             name: [
                { required: true, message: '部门名称不能为空', trigger: 'blur'},
-               { min: 1, max: 50, message: '部门名称要求1-50个字符', trigger:'blur'}
+               { min: 1, max: 50, message: '部门名称要求1-50个字符', trigger:'blur'},
+               { validator: validName, trigger: 'blur' }
             ],
             code: [
                { required: true, message: '部门编码不能为空', trigger: 'blur'},
