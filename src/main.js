@@ -20,6 +20,10 @@ import PageTools from '@/components/PageTools'
 // 注册组件
 Vue.component('PageTools', PageTools)
 
+// 导入全局挂载的组件
+import Components from '@/components'
+Vue.use(Components)
+
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api

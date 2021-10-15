@@ -115,3 +115,26 @@ export function param2Obj(url) {
   })
   return obj
 }
+/**
+ * @deprecated 转换树形数据的方法
+ * @param {*} list 
+ * @param {*} rootValue 
+ * @returns 
+ */
+
+export function tranListToTree(list, rootValue) {
+  const treeData = [] 
+  list.forEach(item => {
+    if(item.pid === rootValue) {
+      // treeData.push(item)
+      const children = tranListToTree(list, item.id)
+      // console.log(children);
+      if(children.length) {
+        item.children = children
+      }
+      treeData.push(item)
+    }
+  })
+  // console.log(treeData);
+  return treeData
+}

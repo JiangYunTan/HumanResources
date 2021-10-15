@@ -136,7 +136,7 @@ export default {
   methods: {
     //新增
     addRoles() {
-      this.$refs.roleForm.validate(async valid => {
+      this.$refs.roleForm.b   (async valid => {
         if (valid) {
 
           if(this.isEdit) {
