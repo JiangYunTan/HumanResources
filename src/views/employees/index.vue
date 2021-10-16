@@ -10,8 +10,8 @@
 
         <!-- 自定义右侧内容 -->
         <template #slot-right>
-          <el-button type="danger" size="small">导入excel</el-button>
-          <el-button type="success" size="small">导出excel</el-button>
+          <el-button type="danger" size="small" @click="$router.push('/excel')">导入excel</el-button>
+          <el-button type="success" size="small" @click="downloadExcel">导出excel</el-button>
           <el-button type="primary" size="small" @click="showDialog = true">新增员工</el-button>
         </template>
       </PageTools>
@@ -150,6 +150,48 @@ export default {
     // 清空表单调用
     dialogClose() {
       this.$refs.AddEmployee.resetForm()
+    },
+    // 导出excel
+    async downloadExcel() {
+      const res = await getEmployeeList()
+      const excelObj = this.transData(res.data.rows)
+      import('@/vendor/Export2Excel').then(excel => {
+        // excel表示导入的模块对象
+        excel.export_json_to_excel({
+          header: excelObj.header, // 表头 必填
+          data: excelObj.data, // 具体数据 必填
+          filename: '员工列表', // 文件名称
+          autoWidth: true, // 宽度是否自适应
+          bookType: 'xlsx' // 生成的文件类型
+        })
+      })
+    },
+
+    transData(rows) {
+      // 写代码
+      const map = {
+        'id': '编号',
+        'password': '密码',
+        'mobile': '手机号',
+        'username': '姓名',
+        'timeOfEntry': '入职日期',
+        'formOfEmployment': '聘用形式',
+        'correctionTime': '转正日期',
+        'workNumber': '工号',
+        'departmentName': '部门',
+        'staffPhoto': '头像地址'
+      }
+
+      const headerKeys = Object.keys(rows[0])
+      const header = headerKeys.map(item => {
+        return map[item]
+      })
+
+      const data = rows.map(obj => {
+        return Object.values(obj)
+      })
+
+      return { header, data }
     }
   },
   created() {

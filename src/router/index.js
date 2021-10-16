@@ -33,6 +33,15 @@ export const constantRoutes = [
       meta: { title: 'Dashboard', icon: 'dashboard' }
     }]
   },
+  {
+    path: '/excel',
+    component: Layout,
+    hidden: true, // 不显示到左侧菜单
+    children: [{
+      path: '',
+      component: () => import('@/views/excel')
+    }]
+  },
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
