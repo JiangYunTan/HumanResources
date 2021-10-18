@@ -52,3 +52,16 @@ export function login(data) {
     url: `/sys/user/${id}`
   })
 }
+
+/**
+ * @description: 保存员工信息
+ * @param {*} data
+ * @return {*}
+ */
+ export function saveUserDetailById(data) {
+  return request({
+    url: `/sys/user/${data.id}`,
+    method: 'put',
+    data
+  })
+}

@@ -11,6 +11,12 @@ export default {
        component: () => import('@/views/employees'),
        // 源信息 自拟定路由属性
        meta:{ title:'员工管理', icon:'people'}
-     }
-    ]
+     },
+    {
+      name: 'employeesDetail',
+      path: 'detail',
+      component: () => import('@/views/employees/detail'),
+      hidden: true
+    }
+  ]
 }

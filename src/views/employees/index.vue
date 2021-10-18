@@ -24,7 +24,11 @@
         <el-table border :data="employeesList" :default-sort="{prop: 'workNumber', order: 'ascending'}">
           <el-table-column type="index" label="序号" />
           <el-table-column prop="username" label="姓名" />
-          <el-table-column prop="staffPhoto" label="头像" />
+          <el-table-column label="头像" width="120">
+            <template slot-scope="scope">
+              <ImageHolder :src="scope.row.staffPhoto" />
+            </template>
+          </el-table-column>
           <el-table-column prop="mobile" label="手机号" />
           <el-table-column prop="workNumber" label="工号" sortable/>
           <el-table-column prop="formOfEmployment" label="聘用形式" :formatter="formatter"/>
@@ -36,7 +40,7 @@
           </el-table-column>
           <el-table-column label="操作" width="200">
             <template slot-scope="scope">
-              <el-button type="text" size="small">查看</el-button>
+              <el-button type="text" size="small" @click="$router.push('/employees/detail?id=' + scope.row.id)">查看</el-button>
               <el-button type="text" size="small">分配角色</el-button>
               <el-button type="text" size="small" @click="delEmployee(scope.row.id)">删除</el-button>
             </template>
@@ -206,4 +210,10 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.staffPhoto {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+}
+</style>
