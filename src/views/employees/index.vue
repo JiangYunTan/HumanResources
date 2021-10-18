@@ -41,7 +41,7 @@
           <el-table-column label="操作" width="200">
             <template slot-scope="scope">
               <el-button type="text" size="small" @click="$router.push('/employees/detail?id=' + scope.row.id)">查看</el-button>
-              <el-button type="text" size="small">分配角色</el-button>
+              <el-button type="text" size="small" @click="setEmp(scope.row.id)">分配角色</el-button>             
               <el-button type="text" size="small" @click="delEmployee(scope.row.id)">删除</el-button>
             </template>
           </el-table-column>
@@ -61,6 +61,12 @@
           />
         </el-row>
       </el-card>
+
+      <!-- 设置角色组件弹框 -->
+        <el-dialog title="分配角色" :visible="showRoleDialog" @close="cancleDialog">
+          <!-- 设置角色组件 -->
+          <AssignRole ref="assignRole" v-if="showRoleDialog" :user-id="userId"  @close="showRoleDialog = false" />
+        </el-dialog>
     </div>
   </div>
 </template>
@@ -68,6 +74,7 @@
 <script>
 // 导入组件
 import PageTools from '@/components/PageTools'
+import AssignRole from './assignRole'
 import { getEmployeeList, delEmployee } from '@/api/employees'
 //导入美枚举
 import EmployeeEnum from '@/constant/employees'
@@ -79,6 +86,7 @@ export default {
   components: {
     PageTools, // 导入自定义组件
     EmpDialog, // 新增弹窗
+    AssignRole, // 弹窗
   },
   data() {
     return {
@@ -88,7 +96,9 @@ export default {
       },
       employeesList: [], // 员工列表
       total: 0, // 数据总条数
-      showDialog: false // 添加员工组件的展示
+      showDialog: false, // 添加员工组件的展示
+      showRoleDialog:false,
+      userId:''
     }
   },
 
@@ -103,12 +113,14 @@ export default {
       this.employeesList = res.data.rows
       this.total = res.data.total
     },
+
     //格式化
     formatter(row, column, cellValue, index) {
       // 用数组的 find 方法找到 id = 1 的元素，再取出它的 value
       const obj = EmployeeEnum.hireType.find(item => item.id === Number(cellValue))
       return obj ? obj.value : '未知'
     },
+
     // 删除功能
     async delEmployee(id) {
       // 判断是不是最后一条数据
@@ -146,15 +158,18 @@ export default {
       this.query.page = newPage
       this.getEmployeeList()
     },
+
     // 点击确定后调用的方法
     updateEmpolyee() {
       this.getEmployeeList()
       this.showDialog = false
     },
+
     // 清空表单调用
     dialogClose() {
       this.$refs.AddEmployee.resetForm()
     },
+
     // 导出excel
     async downloadExcel() {
       const res = await getEmployeeList()
@@ -196,6 +211,22 @@ export default {
       })
 
       return { header, data }
+    },
+
+    // 关闭分配角色弹框
+    cancleDialog() {
+      this.showRoleDialog = false
+    },
+
+    // 分配角色
+    setEmp(id) {
+      this.userId = id
+      this.showRoleDialog = true
+      // console.log(this.userId);
+      // 在父组件中点击分配角色时，直接调用子组件中方法重新获取当前用户的数据
+      // this.$nextTick(() => {
+        // this.$refs.assignRole.getUserRoles()
+      // })
     }
   },
   created() {
