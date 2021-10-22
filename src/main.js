@@ -24,6 +24,9 @@ Vue.component('PageTools', PageTools)
 import Components from '@/components'
 Vue.use(Components)
 
+// 多语言配置
+import i18n from '@/lang'
+
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api
@@ -48,5 +51,6 @@ new Vue({
   el: '#app',
   router,
   store,
+  i18n,
   render: h => h(App)
 })

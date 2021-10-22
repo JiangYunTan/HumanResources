@@ -57,6 +57,17 @@
               </el-table-column>
             </el-table>
 
+            <!-- 分配权限弹窗 -->
+            <!-- 分配权限弹框 -->
+            <el-dialog
+              title="分配权限"
+              :visible.sync="dialogVisible"
+              width="50%"
+              @close="setVisible"
+            >
+              <assign-permission v-if="dialogVisible" :role-id="roleId" @close="setVisible"/>
+            </el-dialog>
+
             <!-- 分页区域 -->
             <el-pagination
               :current-page="query.page"
@@ -101,10 +112,15 @@
 <script>
 import { getRoles, getCompanyInfo, addRole, getRoleId, updateRole, deleteRole } from '@/api/setting'
 import { mapGetters  } from 'vuex'
+import AssignPermission from './assignPermission.vue'
 export default {
+  components: {
+    AssignPermission
+  },
   data() {
     return {
       activeName: 'first',
+      dialogVisible:false, // 分配权限弹窗显示
       query: {
         page: 1, // 当前页面
         pagesize: 10 // 页面显示的条数
@@ -127,7 +143,12 @@ export default {
         description: [
           { required: true, message: '角色描述不能为空', trigger: 'blur' }
         ]
-      }
+      },
+      roleId:{
+        name:'1',
+        id:'1',
+        description:'1'
+      },
     }
   },
   computed: {
@@ -193,7 +214,15 @@ export default {
     },
 
     // 设置角色
-    setRoles() {},
+    setRoles(id) {
+      console.log(id);
+      this.roleId = id
+      this.dialogVisible = true
+    },
+    // 分配权限弹框隐藏
+    setVisible() {
+      this.dialogVisible = false
+    },
 
     // 编辑角色
     async editRoles(id) {

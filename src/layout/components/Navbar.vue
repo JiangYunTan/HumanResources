@@ -4,11 +4,16 @@
 
     <!-- <breadcrumb class="breadcrumb-container" /> -->
     <div class="app-breadcrumb">
-      小柒AI科技研发股份有限公司
+      {{ $t('navbar.companyName') }}
       <span class="breadBtn">体验版</span>
     </div>
 
     <div class="right-menu">
+        <!-- 语言包 -->
+        <lang class="right-menu-item" />
+          <!-- 全屏 -->
+        <ScreenFull class="jjj"></ScreenFull>
+
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
           <img :src="$store.getters.staffPhoto" class="user-avatar">
@@ -132,9 +137,16 @@ export default {
     float: right;
     height: 100%;
     line-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     &:focus {
       outline: none;
+    }
+    .jjj {
+      margin:0px 10px;
+      margin-top: 4px;
     }
 
     .right-menu-item {
